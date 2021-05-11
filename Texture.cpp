@@ -106,3 +106,5 @@ void Texture::free()
 		_textureHeight = 0;
 	}
 }
+
+
