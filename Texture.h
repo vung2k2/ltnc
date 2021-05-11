@@ -2,6 +2,8 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <string>
+#include <SDL_ttf.h>
+
 
 class Texture
 {
@@ -13,7 +15,7 @@ public:
 	void free();
 	void render(int x, int y, SDL_Renderer* renderer, SDL_Rect* clip);
 	void setColor(Uint8 red, Uint8 green, Uint8 blue);
-
+    void loadText(std::string s, SDL_Renderer* renderer, int _size, int x, int y);
 	SDL_Texture* getTexture();
 	void setTexture(SDL_Texture* texture);
 
@@ -30,4 +32,3 @@ private:
 	int _textureWidth;
 	int _textureHeight;
 };
-
