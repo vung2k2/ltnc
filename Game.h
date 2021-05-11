@@ -20,12 +20,13 @@ class Game
 		void Game_Run();
 		void Game_Draw();
 		void Game_LoadMedia();
-        void Game_LoadGameOver();
+        void load_image(std::string file);
 	private:
 		std::string _windowTitle;
 		int _windowWidth;
 		int _windowHeight;
 		bool _running;
+		bool running;
 		SDL_Event _e;
 		int _boardPositionX;
 		int _boardPositionY;
