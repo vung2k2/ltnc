@@ -1,56 +1,39 @@
-#include "Input.h"
+#pragma once
+#include <SDL.h>
+#include <stdio.h>
 
-
-
-Input::Input()
+enum ArrowKeys
 {
-	_upPressed = false;
-	_downPressed = false;
-	_leftPressed = false;
-	_rightPressed = false;
+	LEFT,
+	RIGHT,
+	UP,
+	DOWN,
+	RESET,
+	EXIT,
+	EASY,
+	MEDIUM,
+	HARD
+};
 
-	_leftFrame = 0;
-	_rightFrame = 0;
-
-	for (int i = 0; i < 322; i++) { // init them all to false
-		KEYS[i] = false;
-	}
-}
-
-
-Input::~Input()
+class Input
 {
-}
+	bool KEYS[322];
 
-ArrowKeys Input::getPress(SDL_Event e)
-{
-	if (e.type == SDL_KEYDOWN)
-	{
-		switch (e.key.keysym.sym)
-		{
-			case SDLK_r:
-			    return RESET;
+	public:
+		Input();
+		~Input();
 
-			case SDLK_UP:
-				return UP;
+		ArrowKeys getPress(SDL_Event e);
 
-			case SDLK_DOWN:
-				return DOWN;
+	private:
+		bool _leftPressed;
+		bool _rightPressed;
+		bool _upPressed;
+		bool _downPressed;
+		bool _rPressed;
 
-			case SDLK_LEFT:
-				return LEFT;
+		int _downFrame;
+		int _rightFrame;
+		int _leftFrame;
+};
 
-			case SDLK_RIGHT:
-				return RIGHT;
-
-            case SDLK_ESCAPE:
-                return EXIT;
-            case SDLK_1:
-                return EASY;
-            case SDLK_2:
-                return MEDIUM;
-            case SDLK_3:
-                return HARD;
-		}
-	}
-}
