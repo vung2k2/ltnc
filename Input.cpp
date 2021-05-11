@@ -45,6 +45,12 @@ ArrowKeys Input::getPress(SDL_Event e)
 
             case SDLK_ESCAPE:
                 return EXIT;
+            case SDLK_1:
+                return EASY;
+            case SDLK_2:
+                return MEDIUM;
+            case SDLK_3:
+                return HARD;
 		}
 	}
 }
