@@ -1,11 +1,13 @@
 #include "TetrisBoard.h"
-int score=0;
+
+
+
 TetrisBoard::TetrisBoard()
-{
+{//Tọa độ khung
 	_posX = 50;
 	_posY = 50;
 	resetGame();
-
+//Tọa độ khối
 	_piecePosY = -2;
 	_piecePosX = 4;
 }
@@ -14,19 +16,6 @@ TetrisBoard::TetrisBoard()
 TetrisBoard::~TetrisBoard()
 {
 }
-/*
-void TetrisBoard::randomizeBoard()
-{
-	srand(time(NULL));
-
-	for (int i = 0; i < BOARD_WIDTH; i++)
-	{
-		for (int j = 0; j < BOARD_HEIGHT; j++)
-		{
-			//_boardArray[i][j] = rand() % 2;
-		}
-	}
-}*/
 
 // Tạo bảng
 void TetrisBoard::initBoard()
@@ -79,7 +68,7 @@ void TetrisBoard::draw(SDL_Renderer* renderer)
 			{
 				setColor(piece0.getPieceData(i, j));
 
-				_block.render( j * BLOCK_SIZE + 600, i * BLOCK_SIZE + 200, renderer, NULL);
+				_block.render( j * BLOCK_SIZE + 570, i * BLOCK_SIZE + 200, renderer, NULL);
 
 			}
 		}
@@ -97,6 +86,14 @@ void TetrisBoard::draw(SDL_Renderer* renderer)
 			}
 		}
 	}
+	//In điểm
+	loadText("SCORE: ",renderer,30,550,500);
+	loadText(int_to_string(score),renderer,30,680,500);
+	//In độ khó
+	if(PER_FRAME == 10) loadText("HARD",renderer,30,580,400);
+	if(PER_FRAME == 25) loadText("MEDIUM",renderer,30,580,400);
+	if(PER_FRAME == 40) loadText("EASY",renderer,30,580,400);
+
 }
 
 bool TetrisBoard::isOccupied(int i, int j)
@@ -129,10 +126,11 @@ void TetrisBoard::update()
 						_boardArray[j][_piecePosY + i] = WHITE;
 
 					shiftBoard(i + _piecePosY);
-					score++;
-					std::cout <<"  SCORE: "<< score <<std::endl;
+					score = score + 10;;
+
 				}
 			}
+
 			_piecePosX = 4;
 			_piecePosY = 0;
 			piece=piece0;
@@ -170,6 +168,15 @@ void TetrisBoard::handleInput(SDL_Event e)
 		break;
     case EXIT:
         SDL_Quit();
+        break;
+    case EASY:
+        PER_FRAME = 40;
+        break;
+    case MEDIUM:
+        PER_FRAME = 25;
+        break;
+    case HARD:
+        PER_FRAME = 10;
         break;
 	}
 }
@@ -299,4 +306,48 @@ void TetrisBoard::setColor(Color color)
 			_block.setColor(0xFF, 0xFF, 0xFF);
 			break;
 	}
+}
+
+std::string int_to_string(int x){
+    std::stringstream ss;
+    ss<<x;
+    std::string s;
+    ss>>s;
+  return s;
+}
+
+void loadText(std::string s, SDL_Renderer* renderer, int _size, int x, int y){
+    TTF_Font* font = TTF_OpenFont("VAVOBI.ttf", _size);
+    SDL_Color fg = { 255, 0, 0 };
+    SDL_Surface* surface = TTF_RenderText_Solid(font, s.c_str(), fg);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+    SDL_Rect srcRest;
+	SDL_Rect desRect;
+	TTF_SizeText(font, s.c_str(), &srcRest.w, &srcRest.h);
+
+	srcRest.x = 0;
+	srcRest.y = 0;
+
+	desRect.x = x;
+	desRect.y = y;
+
+	desRect.w = srcRest.w;
+	desRect.h = srcRest.h;
+	SDL_RenderCopy(renderer, texture, &srcRest, &desRect);
+}
+
+void TetrisBoard::luu_diem(){
+    std::ifstream infile;
+    infile.open("image/score.txt");
+    infile >> scoreMax;
+    infile.close();
+    if(score>scoreMax){
+        scoreMax=score;
+        std::ofstream outfile;
+        outfile.open("image/score.txt");
+        outfile << scoreMax ;
+        outfile.close();
+    }
+
 }
