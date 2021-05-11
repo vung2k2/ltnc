@@ -32,6 +32,12 @@ bool Game::Game_Init()
 		std::cout << "Could not initialize SDL: "<< SDL_GetError();
 		success = false;
 	}
+	if (TTF_Init() < 0)
+	{
+		SDL_Log("%s", TTF_GetError());
+		return -1;
+	}
+
 	else
 	{
 		_window = SDL_CreateWindow(_windowTitle.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, _windowWidth, _windowHeight, SDL_WINDOW_SHOWN);
@@ -69,6 +75,7 @@ bool Game::Game_Init()
 	}
 	_running = true;
 
+
 	Game_LoadMedia();
 
 	return success;
@@ -80,8 +87,33 @@ void Game::Game_LoadMedia()
 	_board.setTexture(_blockTexture);
 }
 
+
+
 void Game::Game_Run()
 {
+//Menu
+    running = true;
+    while(running){
+        load_image("image/Menu.bmp");
+        SDL_RenderPresent(_renderer);
+
+        if(SDL_PollEvent(&_e) != 0){
+           if(_e.key.keysym.sym==SDLK_SPACE
+              || _e.key.keysym.sym==SDLK_ESCAPE
+              || _e.key.keysym.sym==SDLK_1
+              || _e.key.keysym.sym==SDLK_2
+              || _e.key.keysym.sym==SDLK_3 )
+            {
+              _board.handleInput(_e);
+              running=false;
+            }
+        }
+    }
+        running = true;
+
+
+
+//Game
 	while (_running)
 	{
 		while (SDL_PollEvent(&_e) != 0)
@@ -89,22 +121,33 @@ void Game::Game_Run()
 			if (_e.type == SDL_QUIT) _running = false;
 			_board.handleInput(_e);
 		}
-
 		_board.update();
 		Game_Draw();
-		if(_board.GameOver()){
-            Game_LoadGameOver();
-            SDL_Delay(4000);
-            _board.resetGame();
-        }
-	}
-}
 
-void Game::Game_LoadGameOver(){
-    SDL_Surface * image = SDL_LoadBMP("image/gameOver.bmp");
+//Game over
+		if(_board.GameOver()){
+            _board.luu_diem();
+            while(running){
+                load_image("image/gameOver.bmp");
+                loadText(int_to_string(_board.scoreMax),_renderer,30,400,545);
+                loadText(int_to_string(_board.score),_renderer,30,400,485);
+                SDL_RenderPresent(_renderer);
+
+                if(SDL_PollEvent(&_e) != 0){
+                    if(_e.key.keysym.sym == SDLK_ESCAPE || _e.key.keysym.sym == SDLK_r){
+                        _board.handleInput(_e);
+                        running=false;
+                    }
+                }
+            }
+            running = true;
+        }
+}
+}
+void Game::load_image(std::string file){
+    SDL_Surface * image = SDL_LoadBMP(file.c_str());
     SDL_Texture * texture = SDL_CreateTextureFromSurface(_renderer, image);
     SDL_RenderCopy(_renderer, texture, NULL, NULL);
-    SDL_RenderPresent(_renderer);
 }
 
 //Vẽ ra màn hình
@@ -112,10 +155,7 @@ void Game::Game_Draw()
 {
 	SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, 0xFF);
 	SDL_RenderClear(_renderer);
-    //Game_LoadMap();
-
     _board.draw(_renderer);
-
 	SDL_RenderPresent(_renderer);
 }
 
